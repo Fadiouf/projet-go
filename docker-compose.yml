@@ -1,0 +1,36 @@
+services:
+
+  postgres_db:
+    image: postgres
+    networks:
+      - api
+    env_file:
+      - .env
+    ports:
+      - "8080:${DB_PORT}"
+    volumes:
+      - "volume_databases:/var/lib/postgresql/data"
+
+    environment:
+      - POSTGRES_PASSWORD=$DB_PASSWORD
+      - POSTGRES_USER=$DB_USER
+      - POSTGRES_DB=$DB_NAME
+
+  users_api:
+    build: .
+    depends_on:
+      - postgres_db
+    env_file:
+      - .env
+    environment:
+      - SERVER_PORT=${SERVER_PORT}
+    networks:
+      - bridge_api
+    ports:
+      - "8080:${SERVER_PORT}"
+
+networks:
+  api: {}
+
+volumes:
+  volume_databases: {}
